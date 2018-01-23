@@ -120,10 +120,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 MediaStore.Images.ImageColumns._ID,
                 MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media.DISPLAY_NAME,
-                MediaStore.Images.Media.SIZE
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.DATE_MODIFIED + " as date"
         };
 
-        return new CursorLoader(this, imageUri, projection, null, null, null);
+        return new CursorLoader(this, imageUri, projection, null, null, "date DESC");
     }
 
     @Override
@@ -144,6 +145,5 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
-//        getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
     }
 }

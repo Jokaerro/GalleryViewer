@@ -2,7 +2,6 @@ package inc.tesla.galleryviewer.presentation.screen.adapters;
 
 import android.database.Cursor;
 import android.database.DataSetObserver;
-import android.provider.BaseColumns;
 import android.support.v7.widget.RecyclerView;
 
 import inc.tesla.galleryviewer.data.BaseModel;

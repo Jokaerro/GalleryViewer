@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import inc.tesla.galleryviewer.R;
@@ -19,6 +20,7 @@ public class ImageGalleryView extends LinearLayout {
     private TextView imageName;
     private TextView imageHash;
     private TextView imageSize;
+    private ProgressBar progressView;
 
     public ImageGalleryView(Context context) {
         super(context);
@@ -46,6 +48,7 @@ public class ImageGalleryView extends LinearLayout {
         imageName = findViewById(R.id.name);
         imageHash = findViewById(R.id.md5);
         imageSize = findViewById(R.id.size);
+        progressView = findViewById(R.id.progressView);
     }
 
     public ImageView getImageView() {
@@ -62,5 +65,9 @@ public class ImageGalleryView extends LinearLayout {
 
     public TextView getImageSize() {
         return imageSize;
+    }
+
+    public ProgressBar getProgressView() {
+        return progressView;
     }
 }

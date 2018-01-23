@@ -15,6 +15,7 @@ public class DataMapper {
         ImageGalleryItem imageGalleryItem = new ImageGalleryItem();
         imageGalleryItem.setImageName(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)));
         imageGalleryItem.setImageSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE)));
+        imageGalleryItem.setImageId(cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)));
 
         Uri imageUri = ContentUris
                         .withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

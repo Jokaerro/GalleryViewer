@@ -13,6 +13,15 @@ public class ImageGalleryItem extends BaseModel {
     private Uri imageUri;
     private String imageName;
     private long imageSize;
+    private long imageId;
+
+    public long getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(long imageId) {
+        this.imageId = imageId;
+    }
 
     public Uri getImageUri() {
         return imageUri;
