@@ -25,7 +25,7 @@ import inc.tesla.galleryviewer.presentation.screen.holders.ImageViewHolder;
  * Created by TESLA on 23.01.2018.
  */
 
-public class ImageGalleryAdapter extends BaseAdapter {
+public class ImageGalleryAdapter extends BaseAdapter<ImageViewHolder> {
 
     @Inject
     public Context context;
