@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -39,10 +41,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     BroadcastReceiver scanCompletedBroadcastReceiver;
     IntentFilter intentFilter;
 
+    Button getButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getButton = findViewById(R.id.button);
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
         RecyclerView recyclerView = findViewById(R.id.rv_images);
@@ -52,51 +58,58 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         adapter = new ImageGalleryAdapter(null);
         recyclerView.setAdapter(adapter);
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+        getButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                if (shouldShowRequestPermissionRationale(
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-                    alertBuilder.setCancelable(true);
-                    alertBuilder.setTitle("Permission necessary");
-                    alertBuilder.setMessage("READ_EXTERNAL_STORAGE permission is necessary");
-                    alertBuilder.setPositiveButton(android.R.string.yes,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ActivityCompat.requestPermissions((Activity) MainActivity.this,
-                                            new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
-                                            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                                }
-                            });
-                    AlertDialog alert = alertBuilder.create();
-                    alert.show();
+                getButton.setVisibility(View.GONE);
 
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                        if (shouldShowRequestPermissionRationale(
+                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
+                            alertBuilder.setCancelable(true);
+                            alertBuilder.setTitle("Permission necessary");
+                            alertBuilder.setMessage("READ_EXTERNAL_STORAGE permission is necessary");
+                            alertBuilder.setPositiveButton(android.R.string.yes,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            ActivityCompat.requestPermissions((Activity) MainActivity.this,
+                                                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                                        }
+                                    });
+                            AlertDialog alert = alertBuilder.create();
+                            alert.show();
+
+                        }
+
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+                        return;
+                    } else {
+                        getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
+                    }
                 }
 
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                intentFilter = new IntentFilter("android.intent.action.MEDIA_SCANNER_FINISHED");
+                intentFilter.addDataScheme("file");
+                scanCompletedBroadcastReceiver = new BroadcastReceiver() {
 
-                return;
-            } else {
-                getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
+                    @Override
+                    public void onReceive(Context arg0, Intent arg1) {
+                        getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
+                    }
+
+                };
+
+                registerReceiver(scanCompletedBroadcastReceiver, intentFilter);
             }
-        }
-
-        intentFilter = new IntentFilter("android.intent.action.MEDIA_SCANNER_FINISHED");
-        intentFilter.addDataScheme("file");
-        scanCompletedBroadcastReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                Log.e("--->", "scan finished");
-                getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
-            }
-
-        };
-
-        registerReceiver(scanCompletedBroadcastReceiver, intentFilter);
+        });
     }
 
     @Override

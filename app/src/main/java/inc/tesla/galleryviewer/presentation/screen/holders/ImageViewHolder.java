@@ -1,5 +1,7 @@
 package inc.tesla.galleryviewer.presentation.screen.holders;
 
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -18,6 +20,8 @@ import inc.tesla.galleryviewer.presentation.util.Utils;
 
 public class ImageViewHolder  extends RecyclerView.ViewHolder {
 
+    private CalcMd5Task calcMd5Task;
+
     public ImageViewHolder(View itemView) {
 
         super(itemView);
@@ -25,16 +29,6 @@ public class ImageViewHolder  extends RecyclerView.ViewHolder {
 
     public void fill(final ImageGalleryItem item) {
         ImageGalleryView imageGalleryView = (ImageGalleryView)itemView;
-
-        imageGalleryView.getImageName().setText(item.getImageName());
-
-        imageGalleryView
-                .getImageHash()
-                .setText(itemView.getContext().getResources().getString(R.string.image_hash,
-                        Utils.fileToMD5(item.getImageUri(), itemView.getContext())));
-
-        float fileSizeInMB = item.getImageSize() / 1024.0f / 1024.0f;
-        imageGalleryView.getImageSize().setText(itemView.getContext().getResources().getString(R.string.image_size, fileSizeInMB));
 
         final ProgressBar progressView = imageGalleryView.getProgressView();
         Picasso.with(itemView.getContext())
@@ -49,9 +43,35 @@ public class ImageViewHolder  extends RecyclerView.ViewHolder {
 
                     @Override
                     public void onError() {
-
+                        progressView.setVisibility(View.GONE);
                     }
                 });
+
+        imageGalleryView.getImageName().setText(item.getImageName());
+
+        calcMd5Task = new CalcMd5Task();
+        calcMd5Task.execute(item.getImageUri());
+
+        float fileSizeInMB = item.getImageSize() / 1024.0f / 1024.0f;
+        imageGalleryView.getImageSize().setText(itemView.getContext().getResources().getString(R.string.image_size, fileSizeInMB));
+    }
+
+    public void reset() {
+        calcMd5Task.cancel(true);
+    }
+
+    private class CalcMd5Task extends AsyncTask<Uri, Void, String> {
+
+        @Override
+        protected String doInBackground(Uri... uris) {
+            Uri path = uris[0];
+            return Utils.fileToMD5(path, itemView.getContext());
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            ((ImageGalleryView)itemView).getImageHash().setText(itemView.getContext().getResources().getString(R.string.image_hash, s));
+        }
     }
 
 }

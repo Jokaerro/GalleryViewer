@@ -34,4 +34,10 @@ public class ImageGalleryAdapter extends BaseAdapter<ImageViewHolder> {
     protected ImageGalleryItem getItemModel(Cursor cursor) {
         return DataMapper.fromCursorImageGalleryItem(cursor);
     }
+
+    @Override
+    public void onViewRecycled(ImageViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.reset();
+    }
 }
